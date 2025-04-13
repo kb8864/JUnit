@@ -27,7 +27,7 @@ class BusinessDayServiceTest {
 	}
 
     @Test
-    private void testSaturdayIsNotBusinessDay() {
+    public void testSaturdayIsNotBusinessDay() {
     	BusinessDayService service = new BusinessDayService();
     	// テスト対象のメソッドに、土曜日の日付を渡す
     	boolean actual = service.isBusinessDay(LocalDate.of(2022, 12,17));
@@ -37,11 +37,19 @@ class BusinessDayServiceTest {
 	}
 
     @Test
-    private void testSundayIsNotBusinessDay () {
+    public void testSundayIsNotBusinessDay () {
     	BusinessDayService service = new BusinessDayService();
     	boolean actual = service.isBusinessDay(LocalDate.of(2022, 12, 25));
     	assertFalse(actual);
     }
+
+    @Test
+    public void testGetNextBusinessDayIsNull() {
+    	BusinessDayService service = new BusinessDayService();
+
+    	LocalDate actual = service.getNextBusinessDay(LocalDate.of(2022, 8, 11),(5) );
+    	assertNull(actual);
+	}
 
 
 }
