@@ -2,6 +2,7 @@ package junit.sample;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 
 public class CalculatorTest {
@@ -43,6 +44,7 @@ public class CalculatorTest {
 	}
 
 	@Test
+	@Tag("Exception")
 	public void testDivException() {
 		Calculator cal = new Calculator();
 //		第一引数は例外クラスを、第二引数はラムダ式でメソッドの実行記入
@@ -50,6 +52,7 @@ public class CalculatorTest {
 	}
 
 	@Test
+	@Tag("Exception")
 	public void testDivException2() {
 		Calculator cal = new Calculator();
 		try {
