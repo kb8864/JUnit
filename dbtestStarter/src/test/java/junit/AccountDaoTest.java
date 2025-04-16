@@ -1,15 +1,26 @@
 package junit;
 
+import static org.junit.jupiter.api.Assertions.*;
+
+import java.io.File;
+
 import org.dbunit.IDatabaseTester;
 import org.dbunit.JdbcDatabaseTester;
 import org.dbunit.database.DatabaseConfig;
 import org.dbunit.database.IDatabaseConnection;
+import org.dbunit.dataset.IDataSet;
+import org.dbunit.dataset.ITable;
+import org.dbunit.dataset.xml.FlatXmlDataSetBuilder;
 import org.dbunit.ext.mysql.MySqlMetadataHandler;
 import org.dbunit.operation.DatabaseOperation;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.MethodOrderer;
+import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestMethodOrder;
 
+@TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 public class AccountDaoTest {
     private static final String DRIVER_NAME = "com.mysql.cj.jdbc.Driver";
     private static final String CONNECTION_URL = "jdbc:mysql://localhost:3306/sample?useUnicode=true&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=UTC";
@@ -34,11 +45,11 @@ public class AccountDaoTest {
         };
 
         //テーブルに初期化用のデータを投入する処理を記述する
-//        IDataSet dataSet =
-//                new FlatXmlDataSetBuilder().build(new File("src/test/resources/data/init.xml"));
-//
-//        dbTester.setDataSet(dataSet);
-//        dbTester.setSetUpOperation(DatabaseOperation.REFRESH);
+        IDataSet dataSet =
+                new FlatXmlDataSetBuilder().build(new File("src/test/resources/data/init.xml"));
+
+        dbTester.setDataSet(dataSet);
+        dbTester.setSetUpOperation(DatabaseOperation.REFRESH);
 
         dbTester.onSetup();
     }
@@ -50,9 +61,19 @@ public class AccountDaoTest {
     }
 
     @Test
+    @Order(1)
     public void searchTest(){
 
         //ID"1"を指定してsearchメソッドを呼び出し、テストを実行する
+    	AccountDao dao = new AccountDao();
+    	Account account = dao.search("1");
+    	assertNotNull(account);
+
+    	//パスワードの一致を確認
+    	String expected = "pass1";
+    	String actual = account.getPass();
+
+    	assertEquals(expected, actual);
 
     }
 
@@ -60,5 +81,18 @@ public class AccountDaoTest {
     public void insertTest() throws Exception {
 
         //ID"3",PASS"pass3"でオブジェクトを生成して、insertするテスト
+    	Account account = new Account("3", "pass3");
+    	AccountDao dao = new AccountDao();
+    	dao.insert(account);
+
+    	//テーブルに内容が変更するの記述
+    	IDataSet datebaseDateSet = dbTester.getConnection().createDataSet();
+
+//    	実測値用のテーブルを定義
+    	ITable actualTable = databaseDataSet.getTable("account");
+
+//    	期待値用のテーブル
+    	IDstaSet expectedDataSet = new FlatXmlDataSetBuilder().build(new File("src/test/resources/data/expected.xml"));
+
     }
 }
